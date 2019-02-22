@@ -35,6 +35,8 @@ def sso(request):
     if getattr(settings, 'ENABLE_OAUTH', False):
         return HttpResponseRedirect(reverse('oauth_login'))
 
+    return HttpResponseRedirect(next_page)
+
 def shib_login(request):
     if REDIRECT_FIELD_NAME in request.GET:
         next_page = request.GET[REDIRECT_FIELD_NAME]

@@ -116,6 +116,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'seahub.auth.middleware.AuthenticationMiddleware',
+    'seahub.auth.middleware.RemoteUserMiddleware',
     'seahub.base.middleware.BaseMiddleware',
     'seahub.base.middleware.InfobarMiddleware',
     'seahub.password_session.middleware.CheckPasswordHash',
@@ -260,6 +261,8 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_DATABASE_CACHE_BACKEND = 'default'
 
 AUTHENTICATION_BACKENDS = (
+    'seahub.base.accounts.ProxyRemoteUserBackend',
+
     'seahub.base.accounts.AuthBackend',
     'seahub.oauth.backends.OauthRemoteUserBackend',
 )
