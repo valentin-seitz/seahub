@@ -13,7 +13,7 @@ from seahub.views.file import view_history_file, view_trash_file,\
     view_snapshot_file, file_edit, view_shared_file, view_file_via_shared_dir,\
     text_diff, view_raw_file, download_file, view_lib_file, \
     file_access, view_lib_file_via_smart_link, view_media_file_via_share_link, \
-    view_media_file_via_public_wiki
+    view_media_file_via_public_wiki, export_markdown
 from seahub.views.repo import repo_history_view, view_shared_dir, \
     view_shared_upload_link, view_lib_as_wiki
 from notifications.views import notification_list
@@ -201,6 +201,7 @@ urlpatterns = [
     url(r'^modules/toggle/$', toggle_modules, name="toggle_modules"),
     url(r'^download_client_program/$', TemplateView.as_view(template_name="download.html"), name="download_client"),
     url(r'^choose_register/$', choose_register, name="choose_register"),
+    url(r'^export-markdown/$', export_markdown, name="export_markdown"),
 
     ### React ###
     url(r'^dashboard/$', react_fake_view, name="dashboard"),

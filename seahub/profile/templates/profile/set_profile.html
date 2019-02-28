@@ -126,6 +126,14 @@
 </div>
 {% endif %}
 
+<div>
+  <a href="#" id="ajax-dl-md">AJAX export markdown</a>
+
+  <form id="export-markdown-form" method="post" action="{% url "export_markdown" %}">{% csrf_token %}
+    <a href="#" id="post-dl-md">Form post export markdown</a>
+  </form>
+  </div>
+
 <div class="setting-item" id="lang-setting">
     <h3>{% trans "Language Setting" %}</h3>
     <a href="#" id="lang-context" data-lang="{{ LANGUAGE_CODE }}">{{ LANGUAGE_CODE|language_name_local|capfirst }} <span class="icon-caret-down"></span></a>
@@ -217,6 +225,8 @@
 {% endblock %}
 
 {% block extra_script %}
+
+<script type="text/javascript" src="http://danml.com/js/download.js"></script>
 <script type="text/javascript">
 // change avatar
 $('#user-avatar-chg-btn').on('click', function() {
@@ -377,8 +387,8 @@ $('#update-webdav-passwd .generate-random-password').click(function() {
     lang_selector.css({'top': lang_context.position().top + lang_context.height() + 3});
 
     lang_context.on('click', function() {
-        lang_selector.toggleClass('hide');
-        return false;
+      lang_selector.toggleClass('hide');
+      return false;
     }).on('focus', function() { $(this).trigger('blur'); });
 
     $(document).on('click', function(e) {
@@ -387,6 +397,39 @@ $('#update-webdav-passwd .generate-random-password').click(function() {
             lang_selector.addClass('hide');
         }
     });
+
+  $('#ajax-dl-md').click(function() {
+      $.ajax({
+        url: '{% url "api-v2.1-markdown-export" %}',
+        type: 'POST',
+        xhrFields:{
+          responseType: 'blob'
+        },        
+        beforeSend: prepareCSRFToken,
+        data: {"content": '<h2 id="user-content-architecture-learning-resources">Architecture Learning Resources</h2>'},
+        
+        success: download.bind(true, "application/pdf", "download.pdf"),
+        error: function(xhr){
+          alert(2);
+        }
+      });
+    return false;
+  });
+
+  $('#post-dl-md').click(function() {
+    var $form = $('#export-markdown-form');
+
+    var input = $("<input>")
+    .attr("type", "hidden")
+    .attr("name", "content")
+    .val('<h2 id="user-content-architecture-learning-resources">Architecture Learning Resources</h2>');
+
+    $form.append($(input));
+    $form.submit();
+
+    return false;
+  });
+  
 })();
 
 $('#set-email-notice-interval-form').on('submit', function() {

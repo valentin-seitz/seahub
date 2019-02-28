@@ -58,6 +58,7 @@ from seahub.utils import render_error, is_org_context, \
     get_conf_text_ext, HAS_OFFICE_CONVERTER, PREVIEW_FILEEXT, \
     normalize_file_path, get_service_url, OFFICE_PREVIEW_MAX_SIZE, \
     normalize_cache_key
+from seahub.utils.html2pdf import html2pdf
 from seahub.utils.ip import get_remote_ip
 from seahub.utils.timeutils import utc_to_local
 from seahub.utils.file_types import (IMAGE, PDF, SVG,
@@ -2172,3 +2173,21 @@ def get_file_content_from_cache(file_id, repo_id, file_name):
         cache.set(cache_key, file_content, 24 * 60 * 60)
 
     return err_msg, file_content
+
+@login_required
+def export_markdown(request):
+    if request.method != 'POST':
+        raise Http404
+
+    content = request.POST.get('content', '')
+    if not content:
+        raise Http404
+
+    pdf_path = html2pdf(content)
+    if pdf_path is None:
+        assert False, 'TODO'
+
+    with open(pdf_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type="application/pdf")
+        response["Content-Disposition"] = "attachment; filename=\"%s\"" % "test.pdf"
+        return response

@@ -1,47 +1,25 @@
 # Copyright (c) 2012-2018 Seafile Ltd.
 # -*- coding: utf-8 -*-
-import codecs
-import json
 import logging
-from subprocess import call
-import os
 
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework import status
 
 from seahub.api2.authentication import TokenAuthentication
 from seahub.api2.throttling import UserRateThrottle
 from seahub.api2.utils import api_error
+from seahub.utils.html2pdf import html2pdf
 
 logger = logging.getLogger(__name__)
 
 
-def generate_pdf(html_content):
-    cwd = os.getcwd()
-    f = codecs.open('media/html5bp/index.html', 'r', 'utf-8')
-    base_template = f.read()
-
-    from django.template import Template, Context
-
-    context = Context({
-        'content': html_content,
-        'baseUrl': 'file://' + os.path.join(cwd, 'media/html5bp'),
-    })
-
-    tmp_html = 'ready_for_generation.html'
-    with open(tmp_html, "wb") as fp:
-        fp.write(Template(base_template).render(context))
-
-    phantomjs = './node_modules/.bin/phantomjs'
-    call([phantomjs, "config.js", tmp_html, "your_PDF.pdf"])
-
 class MarkdownExportView(APIView):
     authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated, )
-    throttle_classes = (UserRateThrottle, )  # TODO, 5 calls per min
+    throttle_classes = (UserRateThrottle, )  # TODO: 5 calls per min
 
     def post(self, request):
         content = request.data.get('content', '')
@@ -49,6 +27,11 @@ class MarkdownExportView(APIView):
             error_msg = 'content invalid.'
             return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
 
-        generate_pdf(content)
+        pdf_path = html2pdf(content)
+        if pdf_path is None:
+            assert False, 'TODO'
 
-        return Response({}, status=status.HTTP_200_OK)
+        with open(pdf_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type="application/pdf")
+            response["Content-Disposition"] = "attachment; filename=\"%s\"" % "test.pdf"
+            return response
