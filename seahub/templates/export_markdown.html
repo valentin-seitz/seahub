@@ -4,60 +4,74 @@
 <h2>Markdown export PDF demo.</h2>
 
 <div>
-  <a href="#" id="ajax-dl-md">export markdown (AJAX)</a>
-
   <form id="export-markdown-form" method="post" action="{% url "export_markdown" %}">{% csrf_token %}
     <a href="#" id="post-dl-md">export markdown (Form post)</a>
   </form>
+
+  <a href="#" id="ajax-dl-md">export markdown (AJAX)</a>
+
 </div>
 
 <textarea cols="160" rows="40">
-<h2 id="user-content-architecture-learning-resources">Architecture Learning Resources</h2>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/921894946/Architecture+Learning+Resources">https://openedx.atlassian.net/wiki/spaces/AC/pages/921894946/Architecture+Learning+Resources</a></p>
-<h3 id="user-content-reading-list">Reading list</h3>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/679772564/Architecture+Recommended+Reading+List">https://openedx.atlassian.net/wiki/spaces/AC/pages/679772564/Architecture+Recommended+Reading+List</a></p>
-<h2 id="user-content-architecture-vision">Architecture Vision</h2>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/921895082/Architecture+Vision">https://openedx.atlassian.net/wiki/spaces/AC/pages/921895082/Architecture+Vision</a></p>
-<h3 id="user-content-bounded-contexts-maturity-model">Bounded Contexts Maturity Model</h3>
-<p>最终状态是物理隔离的 microservice 容器<br>
-  <img src="https://dev.seafile.com/seahub/lib/2e6df407-1e92-4826-921b-e9419cf11478/file/images/auto-upload/image-1548816009234.png?raw=1">
-</p>
-<h3 id="user-content-rest-api-trichotomy-proposal">REST API Trichotomy Proposal</h3>
-<p>不同场景下的 REST API 设计</p>
-<p>
-  <img src="https://dev.seafile.com/seahub/lib/2e6df407-1e92-4826-921b-e9419cf11478/file/images/auto-upload/image-1548410441613.png?raw=1">
-</p>
-<h3 id="user-content-可扩展的／可插拔的平台">可扩展的／可插拔的平台</h3>
-<p>
-  <img src="https://dev.seafile.com/seahub/lib/2e6df407-1e92-4826-921b-e9419cf11478/file/images/auto-upload/image-1548932020904.png?raw=1">
-</p>
-<p><strong>Micro-frontend:</strong> <a href="https://micro-frontends.org/">https://micro-frontends.org/</a></p>
-<h3 id="user-content-认证">认证</h3>
-<p>
-  <img src="https://dev.seafile.com/seahub/lib/2e6df407-1e92-4826-921b-e9419cf11478/file/images/auto-upload/image-1548932052982.png?raw=1">
-</p>
-<h3 id="user-content-授权">授权</h3>
-<p>TODO</p>
-<h2 id="user-content-edx-术语">edx 术语</h2>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/28967341/EdX+Glossary">https://openedx.atlassian.net/wiki/spaces/AC/pages/28967341/EdX+Glossary</a></p>
-<p>www.edx.org 使用 Drupal 搭建</p>
-<p>IDA - Independently Deployable Applications<br>OEP - Open edX Proposal<br>RCA - Root Cause Analysis<br>SFE - SFE stands for Studio Frontend which is a new React/Redux repo for an updated front end for Studio. Repo: <a href="https://github.com/edx/studio-frontend">https://github.com/edx/studio-frontend</a></p>
-<h2 id="user-content-how-tos">How-Tos</h2>
+<h1 id="user-content-seafile-editor-目标">Seafile Editor 目标</h1>
+<p>Seafile Editor 是基于 Slate.js 开发的富文本编辑器。用于 Markdown 文件的编辑，取代现有 Markdown 编辑器的不足：</p>
 <ul>
-  <li>
-    <p>使用Github API，多个项目里搜索特定字符串：<a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/876052610/How+to%3A+Find+list+of+github+repositories+that+contain+a+string">https://openedx.atlassian.net/wiki/spaces/AC/pages/876052610/How+to%3A+Find+list+of+github+repositories+that+contain+a+string</a></p>
-  </li>
-  <li>
-    <p>重复的耗时操作记录到 Request 对象里，做缓存：<a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/131530793%E2%80%98">https://openedx.atlassian.net/wiki/spaces/AC/pages/131530793‘</a></p>
-    <p>代码：<a href="https://github.com/edx/edx-platform/blob/master/openedx/core/lib/cache_utils.py#L14">https://github.com/edx/edx-platform/blob/master/openedx/core/lib/cache_utils.py#L14</a></p>
-  </li>
+  <li>不能可视化的插入和编辑表格</li>
+  <li>不支持图片拖放方式插入</li>
+  <li>扩展定制不方便</li>
 </ul>
-<h2 id="user-content-architecture-design-documents">Architecture Design Documents</h2>
-<h3 id="user-content-on-boarding-architecture-overview">On-boarding Architecture Overview</h3>
-<p><a href="https://docs.google.com/presentation/d/1X3QaSw4sqPLvkXBhC8phoFA7j8dhsL08MCZWwIDMIBE/edit#slide=id.g2c8bd271c1_0_2">https://docs.google.com/presentation/d/1X3QaSw4sqPLvkXBhC8phoFA7j8dhsL08MCZWwIDMIBE/edit#slide=id.g2c8bd271c1_0_2</a></p>
-<h2 id="user-content-architecture-notes-and-thoughts">Architecture Notes and Thoughts</h2>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/159335117/Development+Best+Practices">Development Best Practices</a></p>
-<p><a href="https://openedx.atlassian.net/wiki/spaces/AC/pages/799310705/API+Exploration+Resources">REST API 设计的理念</a></p>
+<p>更远的目标</p>
+<ul>
+  <li>支持更丰富的文本内容编辑</li>
+  <li>支持实时协同编辑</li>
+</ul>
+<h2 id="user-content-目录结构">目录结构</h2>
+<p><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0%E6%96%87%E6%A1%A3">设计和实现文档</a></p>
+<p>描述代码结构，某个功能是怎么设计和实现的。</p>
+<p><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97">开发日志</a></p>
+<p>开发过程的记录。每个人一个自己的文件。</p>
+<p><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E5%BC%80%E5%8F%91%E9%97%AE%E9%A2%98%E8%AE%A8%E8%AE%BA">开发问题讨论</a></p>
+<p>该目录中一个文件记录关于一个特定的功能的讨论。</p>
+<p><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94">调研</a></p>
+<p>记录对相关技术调研的情况。</p>
+<p><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%A7%84%E8%8C%83%E5%92%8CAPI">规范和API</a></p>
+<p>规范和API文档。</p>
+<h2 id="user-content-当前调研">当前调研</h2>
+<ul>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94/%E6%96%87%E4%BB%B6Diff%E5%92%8C%E7%BD%91%E9%A1%B5%E4%B8%8A%E6%98%BE%E7%A4%BA.md">文件Diff和网页上显示.md</a> 未完成</li>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94/%E5%8D%8F%E5%90%8C%E7%BC%96%E8%BE%91.md">协同编辑.md</a> 未完成</li>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94/socket.io.md">socket.io.md</a></li>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94/slatejs.md">slatejs.md</a></li>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/%E8%B0%83%E7%A0%94/remark-js%E5%92%8Cunified-js.md">remark-js和unified-js.md</a></li>
+</ul>
+<h2 id="user-content-代码">代码</h2>
+<ul>
+  <li><a href="https://github.com/seafileltd/seafile-editor">seafile-editor@GitHub</a></li>
+  <li><a href="https://github.com/haiwen/slate2markdown">slate2markdown@GitHub</a></li>
+  <li><a href="https://github.com/seafileltd/seafile-ui">seafile-ui@GitHub</a></li>
+</ul>
+<h2 id="user-content-任务计划">任务计划</h2>
+<ul>
+  <li><a href="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file%2F%E4%BB%BB%E5%8A%A1%E5%AE%89%E6%8E%92.md">任务安排</a></li>
+</ul>
+<h2 id="user-content-常用工具">常用工具</h2>
+<ul>
+  <li>键盘事件测试 <a href="https://dvcs.w3.org/hg/d4e/raw-file/tip/key-event-test.html">https://dvcs.w3.org/hg/d4e/raw-file/tip/key-event-test.html</a></li>
+</ul>
+<h2 id="user-content-参考项目">参考项目</h2>
+<ul>
+  <li><a href="https://github.com/tamlok/vnote">https://github.com/tamlok/vnote</a> A note-taking application that knows programmers and Markdown better.</li>
+  <li><a href="https://github.com/Canner/slate-md-editor">https://github.com/Canner/slate-md-editor</a> 可以参考这个编辑器实现的 shortcuts</li>
+  <li><a href="https://github.com/marktext/marktext">https://github.com/marktext/marktext</a> 基于 vue.js 实现的 Markdown 所见即所得编辑器。实现的比较美观。可以参考下。</li>
+  <li><a href="https://github.com/outline/rich-markdown-editor">https://github.com/outline/rich-markdown-editor</a></li>
+  <li><a href="https://www.getoutline.com/dashboard">https://www.getoutline.com/dashboard</a> 基于 Markdown 的 Wiki 平台</li>
+  <li><a href="https://github.com/froala/wysiwyg-editor">https://github.com/froala/wysiwyg-editor</a> 编辑器，可以参考里边的表格编辑</li>
+  <li>CKEditor 5: 实现了协同编辑，change track 和 comments</li>
+</ul>
+<p>熊掌记: 一款 pad, iphone, Mac 上优美的 Markdown 笔记。</p>
+<p>
+  <img src="https://dev.seafile.com/seahub/lib/92d156fd-22ca-485a-a867-390e3e9ce43c/file/images/auto-upload/image-1549817733631.png?raw=1">
+</p>
 </textarea>
 
 

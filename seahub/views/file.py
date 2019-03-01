@@ -2174,6 +2174,7 @@ def get_file_content_from_cache(file_id, repo_id, file_name):
 
     return err_msg, file_content
 
+import re
 @login_required
 def export_markdown(request):
     if request.method not in ['POST', 'GET']:
@@ -2186,7 +2187,23 @@ def export_markdown(request):
     if not content:
         raise Http404
 
-    pdf_path = html2pdf(content)
+    def repl(matchobj):
+        repo_id = matchobj.group(1)
+        img_path = '/' + matchobj.group(2).split('?')[0]
+
+        obj_id = seafile_api.get_file_id_by_path(repo_id, img_path)
+        if not obj_id:
+            return 'src="#"'
+
+        access_token = seafile_api.get_fileserver_access_token(
+            repo_id, obj_id, 'view', '', use_onetime=True
+        )
+        url = gen_inner_file_get_url(access_token, img_path.split('/')[-1])
+        return 'src="%s"' % url
+
+    new_content = re.sub('src="%s/lib/([-0-9a-f]{36})/file/(.*)"' % get_service_url().rstrip('/'), repl, content)
+
+    pdf_path = html2pdf(new_content)
     if pdf_path is None:
         assert False, 'TODO'
 
