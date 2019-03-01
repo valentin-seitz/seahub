@@ -2176,8 +2176,11 @@ def get_file_content_from_cache(file_id, repo_id, file_name):
 
 @login_required
 def export_markdown(request):
-    if request.method != 'POST':
+    if request.method not in ['POST', 'GET']:
         raise Http404
+
+    if request.method == 'GET':
+        return render(request, 'export_markdown.html', {})
 
     content = request.POST.get('content', '')
     if not content:
