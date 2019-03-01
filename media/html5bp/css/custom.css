@@ -1,0 +1,10 @@
+/* Workaround for the link issue. See: https://github.com/alanshaw/markdown-pdf/issues/63 */
+a[href]:after { content : "" }
+
+/* seahub css */
+a {
+    color:#eb8205;
+    text-decoration:none;
+    font-weight:bold;
+}
+a.normal {font-weight: normal;}
