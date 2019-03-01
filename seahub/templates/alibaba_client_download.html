@@ -1,0 +1,104 @@
+{% extends "base_wide_page.html" %}
+{% load i18n %}
+
+{% block sub_title %}{% trans "Download" %} - {% endblock %}
+
+{% block extra_style %}
+<style type="text/css">
+#main p { font-size:14px; }
+.software h2 {
+    margin-top:20px;
+    line-height:1.8;
+    font-weight:normal;
+    font-size:1.4em;
+    border-bottom: 1px solid #d8d8d8;
+}
+.software h3 {
+    margin:6px 0 0;
+}
+.software .row {
+    margin-top:40px;
+    margin-bottom:40px;
+}
+.software .txt {
+    margin-top:-40px;
+    margin-left:50px;
+}
+.software .download-op {
+    font-size:15px;
+}
+.software .support-version {
+    margin-bottom:0.1rem;
+}
+#download-windows-client, #download-apple-client {
+    cursor:pointer;
+}
+</style>
+{% endblock %}
+
+{% block wide_page_content %}
+
+<div class="software container">
+    {% if LANGUAGE_CODE == 'zh-cn' or LANGUAGE_CODE == 'zh-tw' %}
+    <h2>桌面同步客户端</h2>
+    <div class="row">
+        <div class="col-md-5 col-md-offset-1" id='download-windows-client'>
+            <img src="{{MEDIA_URL}}img/windows.png" alt="" class="pic" />
+            <div class="txt">
+                <h3>Windows客户端</h3>
+                <p class="support-version">可运行于 Windows 7/8/10</p>
+                <a href="{{ windows_client_public_download_url }}" class="download-op">下载 {{ windows_client_version }}</a><br/>
+            </div>
+        </div>
+        <div class="col-md-5 col-md-offset-1" id='download-apple-client'>
+            <img src="{{MEDIA_URL}}img/apple.png" alt="" class="pic" />
+            <div class="txt">
+                <h3>Mac 客户端</h3>
+                <p class="support-version">支持 Mac OS X 10.7+</p>
+                <a href="{{ apple_client_public_download_url }}" class="download-op">下载 {{ apple_client_version }}</a><br/>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <h2>Desktop Syncing Clients</h2>
+    <div class="row">
+        <div class="col-md-5 col-md-offset-1" id='download-windows-client'>
+            <img src="{{MEDIA_URL}}img/windows.png" alt="" class="pic" />
+            <div class="txt">
+                <h3>Client for Windows</h3>
+                <p class="support-version">Runs on 7/8/10</p>
+                <a href="{{ windows_client_public_download_url_en }}" class="download-op">Download {{ windows_client_version_en }}</a><br/>
+            </div>
+        </div>
+        <div class="col-md-5 col-md-offset-1" id='download-apple-client'>
+            <img src="{{MEDIA_URL}}img/apple.png" alt="" class="pic" />
+            <div class="txt">
+                <h3>Client for Mac</h3>
+                <p class="support-version">Runs on Mac OS X 10.7 or above</p>
+                <a href="{{ apple_client_public_download_url_en }}" class="download-op">Download {{ apple_client_version_en }}</a><br/>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+{% if LANGUAGE_CODE == 'zh-cn' or LANGUAGE_CODE == 'zh-tw' %}
+$('#download-windows-client').on('click', function() {
+    window.location.href = "{{ windows_client_public_download_url }}";
+});
+$('#download-apple-client').on('click', function() {
+    window.location.href = "{{ apple_client_public_download_url }}";
+});
+{% else %}
+$('#download-windows-client').on('click', function() {
+    window.location.href = "{{ windows_client_public_download_url_en }}";
+});
+$('#download-apple-client').on('click', function() {
+    window.location.href = "{{ apple_client_public_download_url_en }}";
+});
+{% endif %}
+</script>
+{% endblock %}
