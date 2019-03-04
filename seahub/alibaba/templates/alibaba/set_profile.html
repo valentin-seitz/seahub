@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block sub_title %}{% trans "Settings" %} - {% endblock %}
+
+{% block main_class %}d-flex ovhd{% endblock %}
+
+{% block main_content %}
+<div class="row flex-1 d-flex">
+
+<div class="side-nav side-textnav col-md-3" id="side-nav" role="navigation">
+    <a href="#" title="{% trans "Close" %}" aria-label="{% trans "Close" %}" class="sf2-icon-x1 sf-popover-close op-icon hidden-md-up js-close-side-nav fright"></a>
+    <ul class="side-textnav-tabs">
+        <li class="tab"><a href="#user-basic-info">{% trans "Profile" %}</a></li>
+        <li class="tab"><a href="#lang-setting">{% trans "Language" %}</a></li>
+    </ul>
+</div>
+
+<div id="right-panel" class="col-md-9 ov-auto flex-1">
+
+<h2>{% trans "Settings" %}</h2>
+
+<div id="user-basic-info" class="setting-item">
+    <h3>{% trans "Profile" %}</h3>
+    <div id="user-avatar-change">
+        <label>{% trans "Avatar:" %}</label><img src="{{personal_photo_url}}" width="80" height="80" class="avatar">
+    </div>
+
+    <form action="" method="post">{% csrf_token %}
+        {% if request.LANGUAGE_CODE == 'zh-cn' or request.LANGUAGE_CODE == 'zh-tw' %}
+        <label>{% trans "姓名:" %}</label><input type="text" value="{{ emp_name }}" class="input" disabled />
+        <br/>
+        <label>{% trans "花名:" %}</label><input type="text" value="{{ nick_name }}" class="input" disabled />
+        <br/>
+        <label>{% trans "职位:" %}</label><input type="text" value="{{ post_name }}" class="input" disabled />
+        <br/>
+        <label>{% trans "部门:" %}</label><input type="text" value="{{ dept_name }}" class="input" disabled />
+        <br/>
+        {% else %}
+        <label>{% trans "Name:" %}</label><input type="text" value="{{ emp_name }}" class="input" disabled />
+        <br/>
+        <label>{% trans "Nick Name:" %}</label><input type="text" value="{{ nick_name }}" class="input" disabled />
+        <br/>
+        <label>{% trans "Position:" %}</label><input type="text" value="{{ post_name_en }}" class="input" disabled />
+        <br/>
+        <label>{% trans "Department:" %}</label><input type="text" value="{{ dept_name_en }}" class="input" disabled />
+        <br/>
+        {% endif %}
+    </form>
+</div>
+
+<div class="setting-item" id="lang-setting">
+    <h3>{% trans "Language Setting" %}</h3>
+    <a href="#" id="lang-context" data-lang="{{ LANGUAGE_CODE }}">{{ LANGUAGE_CODE|language_name_local|capfirst }} <span class="icon-caret-down"></span></a>
+    <div id="lang-context-selector" class="sf-popover hide" >
+        <ul class="sf-popover-con">
+            {% for LANG in LANGUAGES %}
+            <li><a href="{% url 'i18n' %}?lang={{ LANG.0 }}">{{ LANG.1 }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+</div> <!-- right-panel -->
+</div> <!-- row -->
+
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+(function() {
+    var lang_context = $('#lang-context'),
+        lang_selector = $('#lang-context-selector');
+
+    lang_context.parent().css({'position':'relative'});
+    lang_selector.css({'top': lang_context.position().top + lang_context.height() + 3});
+
+    lang_context.on('click', function() {
+        lang_selector.toggleClass('hide');
+        return false;
+    }).on('focus', function() { $(this).trigger('blur'); });
+
+    $(document).on('click', function(e) {
+        var element = e.target || e.srcElement;
+        if (element.id != 'lang-context-selector' && element.id != 'lang-context') {
+            lang_selector.addClass('hide');
+        }
+    });
+})();
+</script>
+{% endblock %}

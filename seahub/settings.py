@@ -256,6 +256,7 @@ INSTALLED_APPS = (
     'seahub.repo_tags',
     'seahub.file_tags',
     'seahub.related_files',
+    'seahub.alibaba',
 )
 
 # Enable or disable multiple storage backends.
