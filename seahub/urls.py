@@ -131,7 +131,8 @@ from seahub.api2.endpoints.admin.address_book.groups import AdminAddressBookGrou
 from seahub.api2.endpoints.admin.group_owned_libraries import AdminGroupOwnedLibraries, \
         AdminGroupOwnedLibrary
 
-from seahub.alibaba.views import alibaba_client_download_view
+from seahub.alibaba.views import alibaba_client_download_view, \
+        alibaba_ajax_group_members_import
 
 urlpatterns = [
     url(r'^accounts/', include('seahub.base.registration_urls')),
@@ -232,7 +233,7 @@ urlpatterns = [
     url(r'^ajax/repo/(?P<repo_id>[-0-9a-f]{36})/encrypted_file/(?P<file_id>[0-9a-f]{40})/download/$', download_enc_file, name='download_enc_file'),
     url(r'^ajax/u/d/(?P<token>[-0-9a-f]+)/upload/$', get_file_upload_url_ul, name='get_file_upload_url_ul'),
     url(r'^ajax/group/(?P<group_id>\d+)/repos/$', get_unenc_group_repos, name='get_group_repos'),
-    url(r'^ajax/group/(?P<group_id>\d+)/members/import/$', ajax_group_members_import, name='ajax_group_members_import'),
+    url(r'^ajax/group/(?P<group_id>\d+)/members/import/$', alibaba_ajax_group_members_import, name='ajax_group_members_import'),
     url(r'^ajax/unenc-rw-repos/$', unenc_rw_repos, name='unenc_rw_repos'),
     url(r'^ajax/upload-file-done/$', upload_file_done, name='upload_file_done'),
     url(r'^ajax/get_popup_notices/$', get_popup_notices, name='get_popup_notices'),
