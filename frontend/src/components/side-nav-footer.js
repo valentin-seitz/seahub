@@ -19,13 +19,6 @@ class SideNavFooter extends React.Component {
   render() {
     return (
       <div className="side-nav-footer">
-        <a href={siteRoot + 'help/'} target="_blank" rel="noopener noreferrer" className="item">{gettext('Help')}</a>
-        <a className="item" onClick={this.onAboutDialogToggle}>{gettext('About')}</a>
-        {this.state.isAboutDialogShow &&
-          <ModalPortal>
-            <AboutDialog onCloseAboutDialog={this.onAboutDialogToggle} />
-          </ModalPortal>
-        }
       </div>
     );
   }
