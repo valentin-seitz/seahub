@@ -728,7 +728,20 @@ def view_lib_file(request, repo_id, path):
         return render(request, template, return_dict)
     
     elif filetype == UMIND:
-        return render(request, 'umind_file_view_react.html', return_dict)
+        from seahub.alibaba.models import AlibabaProfile
+
+        ali_work_no = ''
+        ali_username = ''
+        ali_profile = AlibabaProfile.objects.get_profile(username)
+        if ali_profile:
+            ali_work_no = ali_profile.work_no
+            ali_username = '%s (%s)' % ( ali_profile.emp_name, ali_profile.nick_name)
+
+        return_dict['repo_id'] = repo_id
+        return_dict['username'] = username
+        return_dict['ali_work_no'] = ali_work_no
+        return_dict['ali_username'] = ali_username
+        return render(request, 'view_file_umind.html', return_dict)
 
     elif filetype == IMAGE:
         template = '%s_file_view_react.html' % filetype.lower()
