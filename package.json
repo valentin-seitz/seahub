@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "lerna run --parallel dev"
+  },
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "seafile-js"
+  ],
+  "dependencies": {
+    "lerna": "^3.13.1"
+  },
+  "name": "monorepo"
+}
