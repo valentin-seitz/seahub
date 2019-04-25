@@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*-
 # Copyright (c) 2012-2016 Seafile Ltd.
 import operator
-# -*- coding: utf-8 -*-
 from collections import namedtuple
 import datetime
 import logging
