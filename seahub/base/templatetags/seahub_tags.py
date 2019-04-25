@@ -16,7 +16,6 @@ from django.utils.translation import ugettext, ungettext
 from django.utils.translation import pgettext
 from django.utils.html import escape
 
-from seahub.base.accounts import User
 from seahub.profile.models import Profile
 from seahub.profile.settings import NICKNAME_CACHE_TIMEOUT, NICKNAME_CACHE_PREFIX, \
     EMAIL_ID_CACHE_TIMEOUT, EMAIL_ID_CACHE_PREFIX, CONTACT_CACHE_TIMEOUT, \
@@ -399,11 +398,11 @@ def email2id(value):
     key = normalize_cache_key(value, EMAIL_ID_CACHE_PREFIX)
     user_id = cache.get(key)
     if user_id is None:
-        try:
-            user = User.objects.get(email=value)
-            user_id = user.id
-        except User.DoesNotExist:
-            user_id = -1
+        user_id = -1
+        emailuser = ccnet_api.get_emailuser(user)      
+        if emailuser:
+            user_id = emailuser.id
+            
         cache.set(key, user_id, EMAIL_ID_CACHE_TIMEOUT)
     return user_id
 

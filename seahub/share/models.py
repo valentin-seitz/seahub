@@ -25,7 +25,6 @@ from seahub.utils import normalize_file_path, normalize_dir_path, gen_token,\
 ######################### Start PingAn Group related ########################
 import os
 import posixpath
-from seahub.base.accounts import User
 from seahub.base.templatetags.seahub_tags import email2nickname
 from seahub.profile.models import DetailedProfile
 from seahub.share.constants import STATUS_VERIFING, STATUS_PASS, STATUS_VETO
@@ -1064,9 +1063,7 @@ def is_valid_approval_chain_str(chain_str):
     if not user or not chain:
         return False
 
-    try:
-        u = User.objects.get(email=user)
-    except User.DoesNotExist:
+    if not ccnet_api.get_emailuser(user):
         return False
 
     chain_list = approval_chain_str2list(chain)
@@ -1074,21 +1071,19 @@ def is_valid_approval_chain_str(chain_str):
         if isinstance(e, basestring):
             if not is_valid_email(e):
                 return False
-            try:
-                u = User.objects.get(email=e)
-                if not u.is_active:
-                    return False
-            except User.DoesNotExist:
+            emailuser =  ccnet_api.get_emailuser(e)
+            if not emailuser:
+                return False
+            if not emailuser.is_active:
                 return False
         else:
             for x in e[1:]:
                 if not is_valid_email(x):
                     return False
-            try:
-                u = User.objects.get(email=x)
-                if not u.is_active:
-                    return False
-            except User.DoesNotExist:
+            emailuser =  ccnet_api.get_emailuser(x)
+            if not emailuser:
+                return False
+            if not emailuser.is_active:
                 return False
 
     return True
