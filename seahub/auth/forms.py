@@ -1,8 +1,14 @@
+# encoding: utf-8
+######## start pingan
+from django.contrib.sites.models import Site
+######## end pingan
 # Copyright (c) 2012-2016 Seafile Ltd.
 from django.conf import settings
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.http import int_to_base36
+import seaserv
 
 from seaserv import ccnet_api
 
@@ -59,6 +65,15 @@ class AuthenticationForm(forms.Form):
                 username = Profile.objects.convert_login_str_to_username(username)
                 # convert username to primary id if any
                 username = self.get_primary_id_by_username(username)
+
+                ######## start pingan ########
+                if seaserv.get_emailuser_with_import(username) is None:
+                    # user not found in LDAP/DB
+                    raise forms.ValidationError(u"账户无大文件传输平台权限，请先申请/注册")
+                else:
+                    # password not correct
+                    raise forms.ValidationError(_("Please enter a correct email/username and password. Note that both fields are case-sensitive."))
+                ######## end pingan ########
 
                 self.user_cache = authenticate(username=username, password=password)
                 if self.user_cache is None:

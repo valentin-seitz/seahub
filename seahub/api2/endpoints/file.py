@@ -1,5 +1,6 @@
 # Copyright (c) 2012-2016 Seafile Ltd.
 import os
+import posixpath
 import logging
 import posixpath
 import requests
@@ -32,6 +33,10 @@ from seahub.settings import MAX_UPLOAD_FILE_NAME_LEN, \
 
 from seahub.drafts.models import Draft
 from seahub.drafts.utils import is_draft_file, get_file_draft
+# start pingan
+from seahub.signals import file_deleted
+from seahub.settings import MAX_UPLOAD_FILE_NAME_LEN, FILE_LOCK_EXPIRATION_DAYS
+# end pingan
 
 from seaserv import seafile_api
 from pysearpc import SearpcError
@@ -278,6 +283,17 @@ class FileView(APIView):
             if check_folder_permission(request, repo_id, parent_dir) != PERMISSION_READ_WRITE:
                 error_msg = 'Permission denied.'
                 return api_error(status.HTTP_403_FORBIDDEN, error_msg)
+
+######## start pingan ########
+            if request.GET.get('reloaddir', '').lower() == 'true':
+                return reloaddir(request, repo, parent_dir)
+            else:
+                new_file_path = posixpath.join(parent_dir, newname)
+                file_obj = seafile_api.get_dirent_by_path(repo_id, new_file_path)
+
+                return Response({'success': True,
+                                 'obj_name': file_obj.obj_name})
+######## end pingan ########
 
             # check file lock
             try:
@@ -666,6 +682,11 @@ class FileView(APIView):
         try:
             seafile_api.del_file(repo_id, parent_dir,
                                  file_name, request.user.username)
+######################### Start PingAn Group related ########################
+            file_deleted.send(sender=None, repo_id=repo_id,
+                              parent_dir=parent_dir, file_name=file_name,
+                              username=request.user.username)
+######################### End PingAn Group related ##########################
         except SearpcError as e:
             logger.error(e)
             error_msg = 'Internal Server Error'

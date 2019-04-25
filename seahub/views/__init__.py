@@ -749,7 +749,87 @@ def libraries(request):
             'enable_office_web_app': ENABLE_OFFICE_WEB_APP,
             'enable_onlyoffice': ENABLE_ONLYOFFICE,
             'trash_repos_expire_days': expire_days if expire_days > 0 else 30,
+            'can_add_pub_repo': can_add_pub_repo,
+######################### Start PingAn Group related ########################
+            'share_access_force_passwd': settings.SHARE_ACCESS_FORCE_PASSWD,
+            'share_access_force_expirate': True if settings.SHARE_ACCESS_EXPIRATION > 0 else False,
+            'share_access_expirate_days': settings.SHARE_ACCESS_EXPIRATION,
+######################### End PingAn Group related ##########################
             })
+
+@login_required
+@require_POST
+def unsetinnerpub(request, repo_id):
+    """Unshare repos in organization or in share admin page.
+
+    Only system admin, organization admin or repo owner can perform this op.
+    """
+    repo = get_repo(repo_id)
+    perm = request.GET.get('permission', None)
+    if perm is None:
+        return render_error(request, _(u'Argument is not valid'))
+    if not repo:
+        messages.error(request, _('Failed to unshare the library, as it does not exist.'))
+        return HttpResponseRedirect(reverse('share_admin'))
+
+    # permission check
+    username = request.user.username
+    if is_org_context(request):
+        org_id = request.user.org.org_id
+        repo_owner = seafile_api.get_org_repo_owner(repo.id)
+        is_repo_owner = True if repo_owner == username else False
+        if not (request.user.org.is_staff or is_repo_owner):
+            raise Http404
+    else:
+        repo_owner = seafile_api.get_repo_owner(repo.id)
+        is_repo_owner = True if repo_owner == username else False
+        if not (request.user.is_staff or is_repo_owner):
+            raise Http404
+
+    try:
+        if is_org_context(request):
+            org_id = request.user.org.org_id
+            seaserv.seafserv_threaded_rpc.unset_org_inner_pub_repo(org_id,
+                                                                   repo.id)
+        else:
+            seaserv.unset_inner_pub_repo(repo.id)
+
+            origin_repo_id, origin_path = get_origin_repo_info(repo.id)
+            if origin_repo_id is not None:
+                perm_repo_id = origin_repo_id
+                perm_path = origin_path
+            else:
+                perm_repo_id = repo.id
+                perm_path =  '/'
+
+            send_perm_audit_msg('delete-repo-perm', username, 'all',
+                                perm_repo_id, perm_path, perm)
+
+        messages.success(request, _('Unshare "%s" successfully.') % repo.name)
+    except SearpcError:
+        messages.error(request, _('Failed to unshare "%s".') % repo.name)
+
+    referer = request.META.get('HTTP_REFERER', None)
+    next = settings.SITE_ROOT if referer is None else referer
+
+    return HttpResponseRedirect(next)
+
+# @login_required
+# def ownerhome(request, owner_name):
+#     owned_repos = []
+#     quota_usage = 0
+
+#     owned_repos = seafserv_threaded_rpc.list_owned_repos(owner_name)
+#     quota_usage = seafserv_threaded_rpc.get_user_quota_usage(owner_name)
+
+#     user_dict = user_info(request, owner_name)
+
+#     return render_to_response('ownerhome.html', {
+#             "owned_repos": owned_repos,
+#             "quota_usage": quota_usage,
+#             "owner": owner_name,
+#             "user_dict": user_dict,
+#             }, context_instance=RequestContext(request))
 
 @login_required
 def repo_set_access_property(request, repo_id):

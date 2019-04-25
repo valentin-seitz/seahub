@@ -126,6 +126,13 @@ try:
 except ImportError:
     ONLYOFFICE_EDIT_FILE_EXTENSION = ()
 
+######################### Start PingAn Group related ########################
+from seahub.share.models import FileShareDownloads
+from seahub.share.decorators_for_pingan import (
+    share_link_approval_for_pingan, share_link_passwd_check_for_pingan)
+from seahub.signals import file_edited
+######################### End PingAn Group related ##########################
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -1054,13 +1061,28 @@ def _download_file_from_share_link(request, fileshare):
 
     if not dl_token:
         messages.error(request, _(u'Unable to download file.'))
+######################### Start PingAn Group related ########################
+    # record donwload time
+    FileShareDownloads.objects.add(fileshare, username)
+######################### End PingAn Group related ##########################
+
+    send_file_access_msg(request, repo, real_path, 'share-link')
+    try:
+        file_size = seafile_api.get_file_size(repo.store_id, repo.version,
+                                              obj_id)
+        send_message('seahub.stats', 'file-download\t%s\t%s\t%s\t%s' %
+                     (repo.id, shared_by, obj_id, file_size))
+    except Exception as e:
+        logger.error('Error when sending file-download message: %s' % str(e))
 
     return HttpResponseRedirect(gen_file_get_url(dl_token, filename))
 
 @ensure_csrf_cookie
 @share_link_audit
 @share_link_login_required
-def view_shared_file(request, fileshare):
+@share_link_approval_for_pingan
+@share_link_passwd_check_for_pingan
+def view_shared_file(request, fileshare, *args, **kwargs):
     """
     View file via shared link.
     Download share file if `dl` in request param.
@@ -1076,10 +1098,13 @@ def view_shared_file(request, fileshare):
         return render(request, 'share_access_validation.html', d)
 
     # recourse check
+    shared_by = fileshare.username
     repo_id = fileshare.repo_id
     repo = get_repo(repo_id)
     if not repo:
-        raise Http404
+######################### Start PingAn Group related ########################
+        return render_error(request, _(u'该文件外链已失效。'))
+######################### End PingAn Group related ##########################
 
     path = normalize_file_path(fileshare.path)
     obj_id = seafile_api.get_file_id_by_path(repo_id, path)
@@ -1243,7 +1268,8 @@ def view_shared_file(request, fileshare):
     desc_for_ogp = _(u'Share link for %s.') % filename
     icon_path_for_ogp = file_icon_filter(filename, size=192)
 
-    return render(request, template, {
+######################### Start PingAn Group related ########################
+    resp_kwargs = {
             'repo': repo,
             'obj_id': obj_id,
             'path': path,
@@ -1267,7 +1293,64 @@ def view_shared_file(request, fileshare):
             'file_share_link': file_share_link,
             'desc_for_ogp': desc_for_ogp,
             'icon_path_for_ogp': icon_path_for_ogp
-            })
+            }
+    resp_kwargs.update(kwargs)  # append args from `shared_link_approval`
+    return render_to_response('shared_file_view.html', resp_kwargs,
+                              context_instance=RequestContext(request))
+######################### End PingAn Group related ##########################
+
+def view_raw_shared_file(request, token, obj_id, file_name):
+    """Returns raw content of a shared file.
+
+    Arguments:
+    - `request`:
+    - `token`:
+    - `obj_id`:
+    - `file_name`:
+    """
+    fileshare = FileShare.objects.get_valid_file_link_by_token(token)
+    if fileshare is None:
+        raise Http404
+
+    password_check_passed, err_msg = check_share_link_common(request, fileshare)
+    if not password_check_passed:
+        d = {'token': token, 'err_msg': err_msg}
+        if fileshare.is_file_share_link():
+            d['view_name'] = 'view_shared_file'
+        else:
+            d['view_name'] = 'view_shared_dir'
+
+        return render_to_response('share_access_validation.html', d,
+                                  context_instance=RequestContext(request))
+
+    repo_id = fileshare.repo_id
+    repo = get_repo(repo_id)
+    if not repo:
+        raise Http404
+
+    # Normalize file path based on file or dir share link
+    req_path = request.GET.get('p', '').rstrip('/')
+    if req_path:
+        file_path = posixpath.join(fileshare.path, req_path.lstrip('/'))
+    else:
+        if fileshare.is_file_share_link():
+            file_path = fileshare.path.rstrip('/')
+        else:
+            file_path = fileshare.path.rstrip('/') + '/' + file_name
+
+    real_obj_id = seafile_api.get_file_id_by_path(repo_id, file_path)
+    if not real_obj_id:
+        raise Http404
+
+    if real_obj_id != obj_id:   # perm check
+        raise Http404
+
+    filename = os.path.basename(file_path)
+    username = request.user.username
+    token = seafile_api.get_fileserver_access_token(repo_id, real_obj_id, 'view',
+                                                    username, use_onetime=False)
+    outer_url = gen_file_get_url(token, filename)
+    return HttpResponseRedirect(outer_url)
 
 @share_link_audit
 @share_link_login_required
@@ -1577,6 +1660,11 @@ def file_edit_submit(request, repo_id):
         seafserv_threaded_rpc.put_file(repo_id, tmpfile, parent_dir,
                                  filename, username, head_id)
         remove_tmp_file()
+######################### Start PingAn Group related ########################
+        file_edited.send(sender=None, repo_id=repo_id,
+                         parent_dir=parent_dir, file_name=filename,
+                         username=username)
+######################### End PingAn Group related ##########################
         return HttpResponse(json.dumps({'href': next}),
                             content_type=content_type)
     except SearpcError, e:

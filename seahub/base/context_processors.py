@@ -51,6 +51,11 @@ except ImportError:
     ENABLE_FILE_SCAN = False
 
 
+try:
+    from seahub.settings import EMAIL_HOST_USER
+except ImportError:
+    EMAIL_HOST_USER = ''
+
 def base(request):
     """
     Add seahub base configure to the context.
@@ -128,6 +133,9 @@ def base(request):
         'enable_resumable_fileupload': dj_settings.ENABLE_RESUMABLE_FILEUPLOAD,
         'service_url': get_service_url().rstrip('/'),
         'enable_file_scan': ENABLE_FILE_SCAN,
+        ### start pingan ###
+        'email_host_user': EMAIL_HOST_USER,
+        ### end pingan ###
     }
 
     if request.user.is_staff:
